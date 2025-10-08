@@ -1,0 +1,22 @@
+# Terraform Variables Example
+# Copy this file to terraform.tfvars and fill in your values
+# DO NOT commit terraform.tfvars to version control
+
+# Required: Your Vercel API token
+# Get this from: https://vercel.com/account/tokens
+vercel_api_token = "your-vercel-api-token-here"
+
+# Optional: Your Vercel Team ID (leave as null for personal account)
+# Find this in your Vercel team settings
+vercel_team_id = null
+
+# GitHub repository in format "owner/repo"
+github_repo = "adambinnersley/portfolio"
+
+# Branch to deploy to production
+production_branch = "main"
+
+# Optional: Custom domain for your portfolio
+# Set to null if you don't have a custom domain yet
+custom_domain = null
+# custom_domain = "adambinnersley.com"
