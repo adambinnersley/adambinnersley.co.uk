@@ -1,7 +1,2 @@
-process.env.NODE_ENV = 'production';
-
-const app = require('next/dist/cli/next-start');
-
-app.nextStart({
-  port: process.env.PORT || 3000,
-});
+// Start the Next.js standalone server for IIS
+require('./.next/standalone/server.js');
