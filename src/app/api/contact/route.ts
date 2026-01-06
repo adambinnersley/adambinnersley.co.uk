@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { rateLimit } from '@/lib/rate-limit';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to avoid build-time errors when env vars aren't available
+let resend: Resend | null = null;
+function getResendClient(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 // Verify Cloudflare Turnstile token
 async function verifyTurnstileToken(token: string): Promise<boolean> {
@@ -39,7 +46,9 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
 export async function POST(request: NextRequest) {
   try {
     // Get IP address for rate limiting
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+               request.headers.get('x-real-ip') ||
+               'unknown';
     
     // Apply rate limiting (5 requests per hour)
     const rateLimitResult = rateLimit(ip, 5, 60 * 60 * 1000);
@@ -117,7 +126,7 @@ export async function POST(request: NextRequest) {
     // Send email using Resend
     const recipientEmail = process.env.CONTACT_EMAIL || 'abinnersley@gmail.com';
     
-    await resend.emails.send({
+    await getResendClient().emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
       to: recipientEmail,
       replyTo: email,
